@@ -47,6 +47,13 @@ resource "aws_internet_gateway" "gw" {
     Name = "${local.project_name}-${local.env}-igw"
   }
 }
+resource "aws_internet_gateway" "vpc-gw" {
+  vpc_id = data.aws_vpc.default.id
+
+  tags = {
+    Name = "vpc-igw"
+  }
+}
 
 
 resource "aws_eip" "main" {
@@ -85,6 +92,25 @@ resource "aws_route_table_association" "public" {
 
   subnet_id      = aws_subnet.public[0].id
   route_table_id = aws_route_table.public.id
+}
+
+resource "aws_route_table" "vpn_default_public" {
+  vpc_id = data.aws_vpc.default.id
+
+  tags = {
+    Name = "vpn_default_public_route"
+  }
+}
+resource "aws_route" "vpn_default" {
+  route_table_id            = aws_route_table.vpn_default_public.id
+  destination_cidr_block    = "0.0.0.0/0"
+  gateway_id = aws_internet_gateway.vpc-gw.id
+}
+
+resource "aws_route_table_association" "vpn_default" {
+
+  subnet_id      = data.aws_subnet.selected.id
+  route_table_id = aws_route_table.vpn_default_public.id
 }
 
 resource "aws_route_table" "private" {
@@ -132,4 +158,40 @@ resource "aws_db_subnet_group" "default" {
   tags = {
     Name = "database-connect-aws"
   }
+}
+
+
+# Define VPC peering connection
+resource "aws_vpc_peering_connection" "peering_connection" {
+  vpc_id        = aws_vpc.main.id
+  peer_vpc_id   = data.aws_vpc.default.id
+  auto_accept   = true  # You can set this to false if you want to manually accept the peering connection
+}
+
+# Define route in VPC 1 to route traffic to VPC 2 through the peering connection
+resource "aws_route" "route_to_vpc2" {
+  route_table_id         = aws_route_table.public.id
+  destination_cidr_block = data.aws_vpc.default.cidr_block
+    vpc_peering_connection_id = aws_vpc_peering_connection.peering_connection.id
+}
+
+resource "aws_route" "route_to_private_vpc2" {
+  route_table_id         = aws_route_table.private.id
+  destination_cidr_block = data.aws_vpc.default.cidr_block
+    vpc_peering_connection_id = aws_vpc_peering_connection.peering_connection.id
+}
+
+
+resource "aws_route" "route_to_database_vpc2" {
+  route_table_id         = aws_route_table.database.id
+  destination_cidr_block = data.aws_vpc.default.cidr_block
+    vpc_peering_connection_id = aws_vpc_peering_connection.peering_connection.id
+}
+
+
+# Define route in VPC 2 to route traffic to VPC 1 through the peering connection
+resource "aws_route" "route_to_vpc1" {
+  route_table_id         = aws_route_table.vpn_default_public.id
+  destination_cidr_block = aws_vpc.main.cidr_block
+  vpc_peering_connection_id = aws_vpc_peering_connection.peering_connection.id
 }
