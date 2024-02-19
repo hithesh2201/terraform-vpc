@@ -78,7 +78,7 @@ resource "aws_route_table" "public" {
 resource "aws_route" "public" {
   route_table_id            = aws_route_table.public.id
   destination_cidr_block    = "0.0.0.0/0"
-  gateway_id = data.aws_internet_gateway.default.id
+  gateway_id = aws_internet_gateway.gw.id
 }
 
 resource "aws_route_table_association" "public" {
@@ -97,13 +97,13 @@ resource "aws_route_table" "vpn_default_public" {
 resource "aws_route" "vpn_default" {
   route_table_id            = aws_route_table.vpn_default_public.id
   destination_cidr_block    = "0.0.0.0/0"
-  gateway_id =data.aws_internet_gateway.default.id.vpc-gw.id
+  gateway_id =data.aws_internet_gateway.default.id
 }
 
 resource "aws_route_table_association" "vpn_default" {
 
   subnet_id      = data.aws_subnet.selected.id
-  route_table_id = aws_route_table.vpn_default_public.id
+  route_table_id = aws_route_table.vpn_default.id
 }
 
 resource "aws_route_table" "private" {
