@@ -103,7 +103,7 @@ resource "aws_route" "vpn_default" {
 resource "aws_route_table_association" "vpn_default" {
 
   subnet_id      = data.aws_subnet.selected.id
-  route_table_id = aws_route_table.vpn_default.id
+  route_table_id = aws_route_table.vpn_default_public.id
 }
 
 resource "aws_route_table" "private" {
