@@ -97,7 +97,7 @@ resource "aws_route_table" "vpn_default_public" {
 resource "aws_route" "vpn_default" {
   route_table_id         = aws_route_table.vpn_default_public.id
   destination_cidr_block = "0.0.0.0/0"
-  gateway_id             = "igw-0194408b8657d6a29"
+  gateway_id             = data.aws_ssm_parameter.default_igw_id.value
 }
 
 resource "aws_route_table_association" "vpn_default" {

@@ -17,3 +17,6 @@ data "aws_internet_gateway" "default" {
   }
 }
 
+data "aws_ssm_parameter" "default_igw_id" {
+  name = "/${local.project_name}/default-igw"
+}
