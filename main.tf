@@ -47,13 +47,6 @@ resource "aws_internet_gateway" "gw" {
     Name = "${local.project_name}-${local.env}-igw"
   }
 }
-resource "aws_internet_gateway" "vpc-gw" {
-  vpc_id = data.aws_vpc.default.id
-
-  tags = {
-    Name = "vpc-igw"
-  }
-}
 
 
 resource "aws_eip" "main" {
@@ -148,7 +141,7 @@ resource "aws_route" "database" {
 
 resource "aws_route_table_association" "database" {
 
-  subnet_id      = aws_subnet.database[0].id
+  subnet_id     = aws_subnet.database[0].id
   route_table_id = aws_route_table.database.id
 }
 resource "aws_db_subnet_group" "default" {
