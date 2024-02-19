@@ -1,20 +1,20 @@
 variable "public_subnets" {
-    type=list
-    default = []
-  
+  type    = list(any)
+  default = []
+
 }
 variable "private_subnets" {
-    type=list
-    default = []
-  
+  type    = list(any)
+  default = []
+
 }
 variable "database_subnets" {
-    type=list
-    default = []
-  
+  type    = list(any)
+  default = []
+
 }
 variable "availability_zones" {
-    type=list
-    default = []
-  
+  type    = list(any)
+  default = []
+
 }

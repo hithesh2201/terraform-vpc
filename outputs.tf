@@ -1,11 +1,11 @@
 output "vpc_id" {
-    value = aws_vpc.main.id
-  
+  value = aws_vpc.main.id
+
 }
 
 output "aws_availability_zones" {
-    value = data.aws_availability_zones.available.names
-  
+  value = data.aws_availability_zones.available.names
+
 }
 output "public_subnet_ids" {
   value = aws_subnet.public[*].id
@@ -18,5 +18,5 @@ output "database_subnet_ids" {
 }
 output "default_igw" {
   value = data.aws_internet_gateway.default.id
-  
+
 }
