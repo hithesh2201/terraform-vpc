@@ -15,6 +15,6 @@ variable "database_subnets" {
 }
 variable "availability_zones" {
   type    = list(any)
-  default = []
+  default = ["us-east-1a", "us-east-1b"]
 
 }
